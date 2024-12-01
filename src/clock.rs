@@ -11,13 +11,13 @@ where T: Copy + Ord + From<bool> + From<T> + std::ops::AddAssign,
 impl<T> Clock<T>
 where T: Copy + Ord + From<bool> + From<T> + std::ops::AddAssign,
 {
-	pub fn time(&mut self) -> &Time<T>
+	pub fn time(&mut self) -> Time<T>
 	{
 		self.time[self.self_index] += T::from(true);
 		Time::new(&self.time)
 	}
 
-	pub fn time_by<U>(&mut self, causal: &[U]) -> Result<&Time<T>>
+	pub fn time_by<U>(&mut self, causal: &[U]) -> Result<Time<T>>
 	where T: From<U>, U: Copy,
 	{
 		if self.time.len() != causal.len() {
@@ -29,14 +29,14 @@ where T: Copy + Ord + From<bool> + From<T> + std::ops::AddAssign,
 		}
 	}
 
-	pub fn time_by_try_from<U>(&mut self, causal: &[U]) -> Result<&Time<T>>
+	pub fn time_by_try_from<U>(&mut self, causal: &[U]) -> Result<Time<T>>
 	where T: TryFrom<U>, U: Copy, Error: From<<T as TryFrom<U>>::Error>,
 	{
 		let causal: Vec<T> = convert_try_from(causal)?;
 		self.time_by(&causal)
 	}
 
-	pub fn nocheck_time_by<U>(&mut self, causal: &[U]) -> &Time<T>
+	pub fn nocheck_time_by<U>(&mut self, causal: &[U]) -> Time<T>
 	where T: From<U>, U: Copy,
 	{
 		std::iter::zip(&mut self.time, causal)

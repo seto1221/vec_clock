@@ -1,8 +1,5 @@
 mod clock;
 mod time;
-mod time_vec_impl;
-mod time_slice_impl;
-mod time_arr_impl;
 mod error;
 
 pub use clock::Clock;
