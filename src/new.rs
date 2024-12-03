@@ -1,17 +1,17 @@
 use crate::*;
 
-pub fn new(n: usize, self_index: usize) -> Result<Clock<u64>>
+pub fn new(n: usize, self_index: usize) -> Result<VecClock<u64>>
 {
 	new_as::<u64>(n, self_index)
 }
 
-pub fn new_by<U, V>(initial: V, self_index: usize) -> Result<Clock<u64>>
+pub fn new_by<U, V>(initial: V, self_index: usize) -> Result<VecClock<u64>>
 where u64: From<U>, U: Copy, V: AsRef<[U]>,
 {
 	new_as_by::<u64, U, V>(initial, self_index)
 }
 
-pub fn new_by_try_from<U, V>(initial: V, self_index: usize) -> Result<Clock<u64>>
+pub fn new_by_try_from<U, V>(initial: V, self_index: usize) -> Result<VecClock<u64>>
 where
 	u64: TryFrom<U>, U: Copy, V: AsRef<[U]>,
 	Error: From<<u64 as TryFrom<U>>::Error>,
@@ -19,13 +19,13 @@ where
 	new_as_by_try_from::<u64, U, V>(initial, self_index)
 }
 
-pub fn new_as<T>(n: usize, self_index: usize) -> Result<Clock<T>>
+pub fn new_as<T>(n: usize, self_index: usize) -> Result<VecClock<T>>
 where T: Copy + Ord + From<bool> + From<T> + std::ops::AddAssign,
 {
 	new_as_by::<T, bool, _>(&vec![false; n], self_index)
 }
 
-pub fn new_as_by<T, U, V>(initial: V, self_index: usize) -> Result<Clock<T>>
+pub fn new_as_by<T, U, V>(initial: V, self_index: usize) -> Result<VecClock<T>>
 where
 	T: Copy + Ord + From<bool> + From<T> + From<U> + std::ops::AddAssign,
 	U: Copy, V: AsRef<[U]>,
@@ -34,11 +34,11 @@ where
 		Err(Error::OutOfRangeIndex)
 	} else {
 		let time: Vec<T> = convert(initial);
-		Ok(Clock {time, self_index})
+		Ok(VecClock {time, self_index})
 	}
 }
 
-pub fn new_as_by_try_from<T, U, V>(initial: V, self_index: usize) -> Result<Clock<T>>
+pub fn new_as_by_try_from<T, U, V>(initial: V, self_index: usize) -> Result<VecClock<T>>
 where
 	T: Copy + Ord + From<bool> + From<T> + TryFrom<U> + std::ops::AddAssign,
 	U: Copy, V: AsRef<[U]>,
@@ -48,7 +48,7 @@ where
 		Err(Error::OutOfRangeIndex)
 	} else {
 		let time: Vec<T> = convert_try_from(initial)?;
-		Ok(Clock {time, self_index})
+		Ok(VecClock {time, self_index})
 	}
 }
 

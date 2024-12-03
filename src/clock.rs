@@ -1,23 +1,23 @@
 use crate::*;
 
 #[derive(Debug)]
-pub struct Clock<T = u64>
+pub struct VecClock<T = u64>
 where T: Copy + Ord + From<bool> + From<T> + std::ops::AddAssign,
 {
 	pub(crate) time: Vec::<T>,
 	pub(crate) self_index: usize,
 }
 
-impl<T> Clock<T>
+impl<T> VecClock<T>
 where T: Copy + Ord + From<bool> + From<T> + std::ops::AddAssign,
 {
-	pub fn time(&mut self) -> Time<T>
+	pub fn time(&mut self) -> VecTime<T>
 	{
 		self.time[self.self_index] += T::from(true);
-		Time::new(&self.time)
+		VecTime::new(&self.time)
 	}
 
-	pub fn time_by<U>(&mut self, causal: U) -> Result<Time<T>>
+	pub fn time_by<U>(&mut self, causal: U) -> Result<VecTime<T>>
 	where U: AsRef<[T]>,
 	{
 		let causal_ref = causal.as_ref();
@@ -30,7 +30,7 @@ where T: Copy + Ord + From<bool> + From<T> + std::ops::AddAssign,
 		}
 	}
 
-	pub fn nocheck_time_by<U>(&mut self, causal: U) -> Time<T>
+	pub fn nocheck_time_by<U>(&mut self, causal: U) -> VecTime<T>
 	where U: AsRef<[T]>,
 	{
 		std::iter::zip(&mut self.time, causal.as_ref())
@@ -40,13 +40,13 @@ where T: Copy + Ord + From<bool> + From<T> + std::ops::AddAssign,
 	}
 
 	pub fn compare<U>(&self, other: U) -> Result<CompareState>
-	where U: AsRef<[T]>, for<'a> Time<'a, T>: From<&'a Vec<T>>,
+	where U: AsRef<[T]>, for<'a> VecTime<'a, T>: From<&'a Vec<T>>,
 	{
 		compare(&self.time, other)
 	}
 
 	pub fn nocheck_compare<U>(&self, other: U) -> CompareState
-	where U: AsRef<[T]>, for<'a> Time<'a, T>: From<&'a Vec<T>>,
+	where U: AsRef<[T]>, for<'a> VecTime<'a, T>: From<&'a Vec<T>>,
 	{
 		nocheck_compare(&self.time, other)
 	}
@@ -54,8 +54,7 @@ where T: Copy + Ord + From<bool> + From<T> + std::ops::AddAssign,
 
 #[cfg(test)]
 mod tests {
-	use crate::CompareState;
-	use crate::new::*;
+	use crate::*;
 	use crate::test_func::*;
 
 	#[test]

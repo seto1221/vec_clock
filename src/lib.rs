@@ -4,10 +4,9 @@ mod error;
 mod new;
 mod func;
 
-pub use clock::Clock;
-pub use time::Time;
+pub use clock::VecClock;
+pub use time::VecTime;
 pub use error::Error;
-pub use error::Result;
 pub use new::*;
 pub use func::*;
 

@@ -29,9 +29,9 @@ where
 }
 
 pub fn compare<'a, T, U, V>(time1: U, time2: V) -> Result<CompareState>
-where T: Ord + 'a, V: AsRef<[T]>, Time<'a, T>: From<U> + From<Time<'a, T>>,
+where T: Ord + 'a, V: AsRef<[T]>, VecTime<'a, T>: From<U> + From<VecTime<'a, T>>,
 {
-	let t1 = &Time::from(time1);
+	let t1 = &VecTime::from(time1);
 	let t2 = time2.as_ref();
 	if t1.len() != t2.len() {
 		Err(Error::UnmatchTimeSize)
@@ -41,9 +41,9 @@ where T: Ord + 'a, V: AsRef<[T]>, Time<'a, T>: From<U> + From<Time<'a, T>>,
 }
 
 pub fn nocheck_compare<'a, T, U, V>(time1: U, time2: V) -> CompareState
-where T: Ord + 'a, V: AsRef<[T]>, Time<'a, T>: From<U>,
+where T: Ord + 'a, V: AsRef<[T]>, VecTime<'a, T>: From<U>,
 {
-	let t1 = &Time::from(time1);
+	let t1 = &VecTime::from(time1);
 	let t2 = time2.as_ref();
 	if t1 == t2 {
 		CompareState::Same
@@ -60,13 +60,12 @@ where T: Ord + 'a, V: AsRef<[T]>, Time<'a, T>: From<U>,
 mod tests {
 	use super::*;
 	use crate::test_func::*;
-	use crate::Time;
 
 	#[test]
 	fn convert_test() {
 		let mut arr1 = [0u8; 3];
 		let mut vec1 = vec![0u8; 3];
-		let mut time1 = Time::new(&vec1);
+		let mut time1 = VecTime::new(&vec1);
 
 		assert_eq!(convert::<u64, _, _>(&time1), [0; 3]);
 		assert_eq!(convert::<u64, _, _>(&mut time1), [0; 3]);
