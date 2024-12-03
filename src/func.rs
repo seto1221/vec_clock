@@ -19,7 +19,7 @@ where T: From<U>, U: Copy, V: AsRef<[U]>,
 		.collect()
 }
 
-pub fn convert_try_from<T, U, V>(time: V) -> Result<Vec<T>>
+pub fn try_convert<T, U, V>(time: V) -> Result<Vec<T>>
 where
 	T: TryFrom<U>, U: Copy, V: AsRef<[U]>,
 	Error: From<<T as TryFrom<U>>::Error>,
@@ -94,16 +94,16 @@ mod tests {
 	}
 
 	#[test]
-	fn convert_try_from_test() {
-		assert_eq!(convert_try_from::<u8, _, _>([0; 3]).unwrap(), [0; 3]);
+	fn try_convert_test() {
+		assert_eq!(try_convert::<u8, _, _>([0; 3]).unwrap(), [0; 3]);
 
-		let e = convert_try_from::<u8, _, _>([-1; 3]).unwrap_err();
+		let e = try_convert::<u8, _, _>([-1; 3]).unwrap_err();
 		assert_try_from_int_error(&e);
 
-		let e = convert_try_from::<u8, _, _>([!0u64; 3]).unwrap_err();
+		let e = try_convert::<u8, _, _>([!0u64; 3]).unwrap_err();
 		assert_try_from_int_error(&e);
 
-		let e = convert_try_from::<u8, _, _>([char::MAX; 3]).unwrap_err();
+		let e = try_convert::<u8, _, _>([char::MAX; 3]).unwrap_err();
 		assert_try_from_char_error(&e);
 	}
 
