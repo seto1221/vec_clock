@@ -1,14 +1,22 @@
 mod clock;
 mod time;
 mod error;
-mod new;
 mod func;
 
 pub use clock::VecClock;
 pub use time::VecTime;
 pub use error::Error;
-pub use new::*;
 pub use func::*;
+
+pub type Result<T> = std::result::Result<T, Error>;
+
+#[derive(Debug, PartialEq)]
+pub enum CompareState {
+	Same,
+	After,
+	Before,
+	Concurrent,
+}
 
 #[cfg(test)]
 pub mod test_func {

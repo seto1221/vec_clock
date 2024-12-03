@@ -1,11 +1,13 @@
 use crate::*;
 
-#[derive(Debug, PartialEq)]
-pub enum CompareState {
-	Same,
-	After,
-	Before,
-	Concurrent,
+pub fn new<T>(vec: Vec<T>, self_index: usize) -> Result<VecClock<T>>
+where T: Copy + Ord + From<bool> + std::ops::AddAssign,
+{
+	if self_index >= vec.len() {
+		Err(Error::OutOfRangeIndex)
+	} else {
+		Ok(VecClock {time: vec, self_index})
+	}
 }
 
 pub fn convert<T, U, V>(time: V) -> Vec<T>
@@ -60,6 +62,17 @@ where T: Ord + 'a, V: AsRef<[T]>, VecTime<'a, T>: From<U>,
 mod tests {
 	use super::*;
 	use crate::test_func::*;
+
+	#[test]
+	fn new_test() {
+		new(vec![0u8; 3], 0).unwrap();
+
+		let e = new(vec![0u8; 3], 3).unwrap_err();
+		assert_out_of_range_index(&e);
+
+		let e = new::<u8>(vec![], 0).unwrap_err();
+		assert_out_of_range_index(&e);
+	}
 
 	#[test]
 	fn convert_test() {

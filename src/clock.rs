@@ -59,22 +59,22 @@ mod tests {
 
 	#[test]
 	fn clock_time_test() {
-		let mut vc = new(1, 0).unwrap();
+		let mut vc = new(vec![0u64; 1], 0).unwrap();
 		assert!(vc.time() == [1]);
 		assert!(vc.time() == [2]);
 		assert!(vc.time() == [3]);
 
-		let mut vc = new(3, 0).unwrap();
+		let mut vc = new(vec![0u64; 3], 0).unwrap();
 		assert!(vc.time() == [1, 0, 0]);
 		assert!(vc.time() == [2, 0, 0]);
 		assert!(vc.time() == [3, 0, 0]);
 
-		let mut vc = new(3, 1).unwrap();
+		let mut vc = new(vec![0u64; 3], 1).unwrap();
 		assert!(vc.time() == [0, 1, 0]);
 		assert!(vc.time() == [0, 2, 0]);
 		assert!(vc.time() == [0, 3, 0]);
 
-		let mut vc = new(3, 2).unwrap();
+		let mut vc = new(vec![0u64; 3], 2).unwrap();
 		assert!(vc.time() == [0, 0, 1]);
 		assert!(vc.time() == [0, 0, 2]);
 		assert!(vc.time() == [0, 0, 3]);
@@ -83,13 +83,13 @@ mod tests {
 	#[test]
 	#[should_panic(expected = "attempt to add with overflow")]
 	fn clock_time_overflow_test() {
-		let mut vc = new_by(&[0u64, !0, 0], 1).unwrap();
+		let mut vc = new(vec![0u64, !0, 0], 1).unwrap();
 		vc.time();
 	}
 
 	#[test]
 	fn clock_time_by_test() {
-		let mut vc = new(3, 1).unwrap();
+		let mut vc = new(vec![0u64; 3], 1).unwrap();
 		assert!(vc.time_by(&[0u64; 3]).unwrap() == [0, 1, 0]);
 		assert!(vc.time_by(&[1u64, 1, 3]).unwrap() == [1, 2, 3]);
 		assert!(vc.time_by(&[!0u64, 0, !0 - 1]).unwrap() == [!0, 3, !0 - 1]);
@@ -107,13 +107,13 @@ mod tests {
 	#[test]
 	#[should_panic(expected = "attempt to add with overflow")]
 	fn clock_time_by_overflow_test() {
-		let mut vc = new_by(&[0u64, !0, 0], 1).unwrap();
+		let mut vc = new(vec![0u64, !0, 0], 1).unwrap();
 		let _ = vc.time_by(&[0u64; 3]);
 	}
 
 	#[test]
 	fn clock_nocheck_time_by_test() {
-		let mut vc = new(3, 1).unwrap();
+		let mut vc = new(vec![0u64; 3], 1).unwrap();
 		assert!(vc.nocheck_time_by(&[0u64; 3]) == [0, 1, 0]);
 		assert!(vc.nocheck_time_by(&[1u64, 1, 3]) == [1, 2, 3]);
 		assert!(vc.nocheck_time_by(&[!0u64, 0, !0 - 1]) == [!0, 3, !0 - 1]);
@@ -125,13 +125,13 @@ mod tests {
 	#[test]
 	#[should_panic(expected = "attempt to add with overflow")]
 	fn clock_nocheck_time_by_overflow_test() {
-		let mut vc = new(3, 1).unwrap();
+		let mut vc = new(vec![0u64; 3], 1).unwrap();
 		let _ = vc.nocheck_time_by(&[0u64, !0, 0]);
 	}
 
 	#[test]
 	fn clock_compare_test() {
-		let vc = new_by(&[1u64; 3], 1).unwrap();
+		let vc = new(vec![1u64; 3], 1).unwrap();
 		assert_eq!(vc.compare(&[0u64, 0, 0]).unwrap(), CompareState::After);
 		assert_eq!(vc.compare(&[0u64, 0, 1]).unwrap(), CompareState::After);
 		assert_eq!(vc.compare(&[0u64, 0, 2]).unwrap(), CompareState::Concurrent);
@@ -169,7 +169,7 @@ mod tests {
 
 	#[test]
 	fn clock_nocheck_compare_test() {
-		let vc = new_by(&[1u64; 3], 1).unwrap();
+		let vc = new_by(vec![1u64; 3], 1).unwrap();
 		assert_eq!(vc.nocheck_compare(&[0u64, 0, 0]), CompareState::After);
 		assert_eq!(vc.nocheck_compare(&[0u64, 0, 1]), CompareState::After);
 		assert_eq!(vc.nocheck_compare(&[0u64, 0, 2]), CompareState::Concurrent);

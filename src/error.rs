@@ -6,8 +6,6 @@ pub enum Error {
 	ExternalError(Box<dyn ExternalError>),
 }
 
-pub type Result<T> = std::result::Result<T, Error>;
-
 impl std::error::Error for Error {}
 
 impl std::fmt::Display for Error
