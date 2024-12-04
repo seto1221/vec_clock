@@ -13,8 +13,8 @@ pub type Result<T> = std::result::Result<T, Error>;
 #[derive(Debug, PartialEq)]
 pub enum CompareState {
 	Same,
-	After,
 	Before,
+	After,
 	Concurrent,
 }
 

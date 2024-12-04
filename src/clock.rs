@@ -44,12 +44,6 @@ where T: Copy + Ord + From<bool> + From<T> + std::ops::AddAssign,
 	{
 		compare(&self.time, other)
 	}
-
-	pub fn nocheck_compare<U>(&self, other: U) -> CompareState
-	where U: AsRef<[T]>, for<'a> VecTime<'a, T>: From<&'a Vec<T>>,
-	{
-		nocheck_compare(&self.time, other)
-	}
 }
 
 #[cfg(test)]
@@ -165,40 +159,5 @@ mod tests {
 
 		let e = vc.compare(&[0u64; 4]).unwrap_err();
 		assert_unmatch_time_size(&e);
-	}
-
-	#[test]
-	fn clock_nocheck_compare_test() {
-		let vc = new_by(vec![1u64; 3], 1).unwrap();
-		assert_eq!(vc.nocheck_compare(&[0u64, 0, 0]), CompareState::After);
-		assert_eq!(vc.nocheck_compare(&[0u64, 0, 1]), CompareState::After);
-		assert_eq!(vc.nocheck_compare(&[0u64, 0, 2]), CompareState::Concurrent);
-		assert_eq!(vc.nocheck_compare(&[0u64, 1, 0]), CompareState::After);
-		assert_eq!(vc.nocheck_compare(&[0u64, 1, 1]), CompareState::After);
-		assert_eq!(vc.nocheck_compare(&[0u64, 1, 2]), CompareState::Concurrent);
-		assert_eq!(vc.nocheck_compare(&[0u64, 2, 0]), CompareState::Concurrent);
-		assert_eq!(vc.nocheck_compare(&[0u64, 2, 1]), CompareState::Concurrent);
-		assert_eq!(vc.nocheck_compare(&[0u64, 2, 2]), CompareState::Concurrent);
-		assert_eq!(vc.nocheck_compare(&[1u64, 0, 0]), CompareState::After);
-		assert_eq!(vc.nocheck_compare(&[1u64, 0, 1]), CompareState::After);
-		assert_eq!(vc.nocheck_compare(&[1u64, 0, 2]), CompareState::Concurrent);
-		assert_eq!(vc.nocheck_compare(&[1u64, 1, 0]), CompareState::After);
-		assert_eq!(vc.nocheck_compare(&[1u64, 1, 1]), CompareState::Same);
-		assert_eq!(vc.nocheck_compare(&[1u64, 1, 2]), CompareState::Before);
-		assert_eq!(vc.nocheck_compare(&[1u64, 2, 0]), CompareState::Concurrent);
-		assert_eq!(vc.nocheck_compare(&[1u64, 2, 1]), CompareState::Before);
-		assert_eq!(vc.nocheck_compare(&[1u64, 2, 2]), CompareState::Before);
-		assert_eq!(vc.nocheck_compare(&[2u64, 0, 0]), CompareState::Concurrent);
-		assert_eq!(vc.nocheck_compare(&[2u64, 0, 1]), CompareState::Concurrent);
-		assert_eq!(vc.nocheck_compare(&[2u64, 0, 2]), CompareState::Concurrent);
-		assert_eq!(vc.nocheck_compare(&[2u64, 1, 0]), CompareState::Concurrent);
-		assert_eq!(vc.nocheck_compare(&[2u64, 1, 1]), CompareState::Before);
-		assert_eq!(vc.nocheck_compare(&[2u64, 1, 2]), CompareState::Before);
-		assert_eq!(vc.nocheck_compare(&[2u64, 2, 0]), CompareState::Concurrent);
-		assert_eq!(vc.nocheck_compare(&[2u64, 2, 1]), CompareState::Before);
-		assert_eq!(vc.nocheck_compare(&[2u64, 2, 2]), CompareState::Before);
-
-		assert_eq!(vc.nocheck_compare(&[0u64; 2]), CompareState::Concurrent);
-		assert_eq!(vc.nocheck_compare(&[0u64; 4]), CompareState::Concurrent);
 	}
 }

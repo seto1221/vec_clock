@@ -31,31 +31,9 @@ where
 }
 
 pub fn compare<'a, T, U, V>(time1: U, time2: V) -> Result<CompareState>
-where T: Ord + 'a, V: AsRef<[T]>, VecTime<'a, T>: From<U> + From<VecTime<'a, T>>,
-{
-	let t1 = &VecTime::from(time1);
-	let t2 = time2.as_ref();
-	if t1.len() != t2.len() {
-		Err(Error::UnmatchTimeSize)
-	} else {
-		Ok(nocheck_compare(t1, t2))
-	}
-}
-
-pub fn nocheck_compare<'a, T, U, V>(time1: U, time2: V) -> CompareState
 where T: Ord + 'a, V: AsRef<[T]>, VecTime<'a, T>: From<U>,
 {
-	let t1 = &VecTime::from(time1);
-	let t2 = time2.as_ref();
-	if t1 == t2 {
-		CompareState::Same
-	} else if t1 < t2 {
-		CompareState::Before
-	} else if t1 > t2 {
-		CompareState::After
-	} else {
-		CompareState::Concurrent
-	}
+	VecTime::from(time1).compare(time2)
 }
 
 #[cfg(test)]
@@ -120,14 +98,5 @@ mod tests {
 
 		let e = compare::<u8, _, _>(&vec![1; 3], &[0; 4]).unwrap_err();
 		assert_unmatch_time_size(&e);
-	}
-
-	#[test]
-	fn nocheck_compare_test() {
-		assert_eq!(nocheck_compare::<u8, _, _>(&vec![1; 3], &[2, 1, 0]), CompareState::Concurrent);
-		assert_eq!(nocheck_compare::<u8, _, _>(&vec![1; 3], &[1, 1, 0]), CompareState::After);
-		assert_eq!(nocheck_compare::<u8, _, _>(&vec![1; 3], &[1, 1, 1]), CompareState::Same);
-		assert_eq!(nocheck_compare::<u8, _, _>(&vec![1; 3], &[1, 1, 2]), CompareState::Before);
-		assert_eq!(nocheck_compare::<u8, _, _>(&vec![1; 3], &[0, 1, 2]), CompareState::Concurrent);
 	}
 }

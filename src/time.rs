@@ -1,3 +1,5 @@
+use crate::*;
+
 #[derive(Debug)]
 pub struct VecTime<'a, T>(&'a Vec<T>);
 
@@ -14,6 +16,39 @@ impl<'a, T> VecTime<'a, T>
 	pub fn len(&self) -> usize
 	{
 		self.0.len()
+	}
+
+	pub fn compare<V>(&self, other: V) -> Result<CompareState>
+	where T: Ord, V: AsRef<[T]>,
+	{
+		let mut ord = std::cmp::Ordering::Equal;
+		let mut iter1 = self.0.iter();
+		let mut iter2 = other.as_ref().iter();
+		loop {
+			let t1 = iter1.next();
+			let t2 = iter2.next();
+			if t1 == None && t2 == None {
+				return match ord {
+					std::cmp::Ordering::Equal => Ok(CompareState::Same),
+					std::cmp::Ordering::Less => Ok(CompareState::Before),
+					std::cmp::Ordering::Greater => Ok(CompareState::After),
+				};
+			}
+			if t1 == None || t2 == None {
+				return Err(Error::UnmatchTimeSize);
+			}
+			let o = t1.unwrap().cmp(t2.unwrap());
+			if o == std::cmp::Ordering::Equal {
+				continue;
+			}
+			if ord == std::cmp::Ordering::Equal {
+				ord = o;
+				continue;
+			}
+			if ord != o {
+				return Ok(CompareState::Concurrent);
+			}
+		}
 	}
 }
 
@@ -105,29 +140,11 @@ where T: Ord,
 {
 	fn partial_cmp(&self, rhs: &[T]) -> Option<std::cmp::Ordering>
 	{
-		let mut ordering = std::cmp::Ordering::Equal;
-		let mut iter1 = self.0.iter();
-		let mut iter2 = rhs.iter();
-		loop {
-			let t1 = iter1.next();
-			let t2 = iter2.next();
-			if t1 == None && t2 == None {
-				return Some(ordering);
-			}
-			if t1 == None || t2 == None {
-				return None;
-			}
-			let o = t1.unwrap().cmp(t2.unwrap());
-			if o == std::cmp::Ordering::Equal {
-				continue;
-			}
-			if ordering == std::cmp::Ordering::Equal {
-				ordering = o;
-				continue;
-			}
-			if ordering != o {
-				return None;
-			}
+		match self.compare(rhs) {
+			Ok(CompareState::Same) => Some(std::cmp::Ordering::Equal),
+			Ok(CompareState::Before) => Some(std::cmp::Ordering::Less),
+			Ok(CompareState::After) => Some(std::cmp::Ordering::Greater),
+			_ => None,
 		}
 	}
 }
