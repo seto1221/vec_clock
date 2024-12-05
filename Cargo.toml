@@ -2,3 +2,7 @@
 name = "vec_clock"
 version = "0.1.0"
 edition = "2021"
+authors = ["seto <seto1221.dev@gmail.com>"]
+description = "Vector clock implimentation."
+license = "MIT"
+repository = "https://github.com/seto1221/vec_clock"
