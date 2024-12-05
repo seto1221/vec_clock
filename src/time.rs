@@ -18,6 +18,12 @@ impl<'a, T> VecTime<'a, T>
 		self.0.len()
 	}
 
+	#[inline]
+	pub fn as_slice(&self) -> &[T]
+	{
+		self.0.as_slice()
+	}
+
 	pub fn compare<V>(&self, other: V) -> Result<CompareState>
 	where T: Ord, V: AsRef<[T]>,
 	{
@@ -93,7 +99,7 @@ impl<'a, T> std::convert::AsRef<[T]> for VecTime<'a, T>
 	#[inline]
 	fn as_ref(&self) -> &[T]
 	{
-		self.0.as_slice()
+		self.as_slice()
 	}
 }
 

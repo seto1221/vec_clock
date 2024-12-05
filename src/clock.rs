@@ -39,6 +39,24 @@ where T: Copy + Ord + From<bool> + From<T> + std::ops::AddAssign,
 		self.time()
 	}
 
+	#[inline]
+	pub fn self_index(&self) -> usize
+	{
+		self.self_index
+	}
+
+	#[inline]
+	pub fn len(&self) -> usize
+	{
+		self.time.len()
+	}
+
+	#[inline]
+	pub fn as_slice(&self) -> &[T]
+	{
+		self.time.as_slice()
+	}
+
 	pub fn compare<U>(&self, other: U) -> Result<CompareState>
 	where U: AsRef<[T]>, for<'a> VecTime<'a, T>: From<&'a Vec<T>>,
 	{
