@@ -11,12 +11,14 @@ where T: Copy + Ord + From<bool> + From<T> + std::ops::AddAssign,
 impl<T> VecClock<T>
 where T: Copy + Ord + From<bool> + From<T> + std::ops::AddAssign,
 {
+	/// Get vector clock time, incrementing self index time.
 	pub fn time(&mut self) -> VecTime<T>
 	{
 		self.time[self.self_index] += T::from(true);
 		VecTime::new(&self.time)
 	}
 
+	/// Get vector clock time, incrementing self index time and updating by causal.
 	pub fn time_by<U>(&mut self, causal: U) -> Result<VecTime<T>>
 	where U: AsRef<[T]>,
 	{
@@ -30,6 +32,7 @@ where T: Copy + Ord + From<bool> + From<T> + std::ops::AddAssign,
 		}
 	}
 
+	/// Get vector clock time, incrementing self index time and updating by causal without checking self index time.
 	pub fn nocheck_time_by<U>(&mut self, causal: U) -> VecTime<T>
 	where U: AsRef<[T]>,
 	{
@@ -39,24 +42,28 @@ where T: Copy + Ord + From<bool> + From<T> + std::ops::AddAssign,
 		self.time()
 	}
 
+	/// Returns the number of self index in the VecClock.
 	#[inline]
 	pub fn self_index(&self) -> usize
 	{
 		self.self_index
 	}
 
+	/// Returns the number of elements in the VecClock.
 	#[inline]
 	pub fn len(&self) -> usize
 	{
 		self.time.len()
 	}
 
+	/// Extracts a slice.
 	#[inline]
 	pub fn as_slice(&self) -> &[T]
 	{
 		self.time.as_slice()
 	}
 
+	/// Compare time.
 	pub fn compare<U>(&self, other: U) -> Result<CompareState>
 	where U: AsRef<[T]>, for<'a> VecTime<'a, T>: From<&'a Vec<T>>,
 	{

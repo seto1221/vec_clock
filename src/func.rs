@@ -1,5 +1,6 @@
 use crate::*;
 
+/// Constructs new `VecClock<T>` from `Vec<T>`.
 pub fn new<T>(vec: Vec<T>, self_index: usize) -> Result<VecClock<T>>
 where T: Copy + Ord + From<bool> + std::ops::AddAssign,
 {
@@ -10,6 +11,7 @@ where T: Copy + Ord + From<bool> + std::ops::AddAssign,
 	}
 }
 
+/// Convert to `Vec<T>` from `AsRef<[U]>` trait object.
 pub fn convert<T, U, V>(time: V) -> Vec<T>
 where T: From<U>, U: Copy, V: AsRef<[U]>,
 {
@@ -19,6 +21,7 @@ where T: From<U>, U: Copy, V: AsRef<[U]>,
 		.collect()
 }
 
+/// Try convert to `Vec<T>` from `AsRef<[U]>` trait object.
 pub fn try_convert<T, U, V>(time: V) -> Result<Vec<T>>
 where
 	T: TryFrom<U>, U: Copy, V: AsRef<[U]>,
@@ -30,6 +33,7 @@ where
 			.collect::<std::result::Result<Vec<_>, _>>()?)
 }
 
+/// Compare time.
 pub fn compare<'a, T, U, V>(time1: U, time2: V) -> Result<CompareState>
 where T: Ord + 'a, V: AsRef<[T]>, VecTime<'a, T>: From<U>,
 {

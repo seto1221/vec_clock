@@ -5,6 +5,7 @@ pub struct VecTime<'a, T>(&'a Vec<T>);
 
 impl<'a, T> VecTime<'a, T>
 {
+	/// Constructs new `VecTime<T>`.
 	#[inline]
 	#[must_use]
 	pub fn new(vec: &'a Vec<T>) -> Self
@@ -12,18 +13,21 @@ impl<'a, T> VecTime<'a, T>
 		Self(vec)
 	}
 
+	/// Returns the number of elements in the VecTime.
 	#[inline]
 	pub fn len(&self) -> usize
 	{
 		self.0.len()
 	}
 
+	/// Extracts a slice.
 	#[inline]
 	pub fn as_slice(&self) -> &[T]
 	{
 		self.0.as_slice()
 	}
 
+	/// Compare time.
 	pub fn compare<V>(&self, other: V) -> Result<CompareState>
 	where T: Ord, V: AsRef<[T]>,
 	{
