@@ -38,9 +38,9 @@
 //! assert_eq!(clock.compare(&[5, 1, 2]).unwrap(), vc::CompareState::Same);
 //! ```
 
-mod clock;
-mod time;
-mod error;
+pub mod clock;
+pub mod time;
+pub mod error;
 mod func;
 
 pub use clock::VecClock;
