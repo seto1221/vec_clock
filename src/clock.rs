@@ -35,7 +35,7 @@ where T: Copy + Ord + From<bool> + From<T> + std::ops::AddAssign,
 		let causal_ref = causal.as_ref();
 		if self.time.len() != causal_ref.len() {
 			Err(Error::UnmatchTimeSize)
-		} else if self.time.as_mut_slice()[self.self_index] < T::from(causal_ref[self.self_index]) {
+		} else if self.time.as_slice()[self.self_index] < T::from(causal_ref[self.self_index]) {
 			Err(Error::InvalidTimeValue)
 		} else {
 			Ok(self.nocheck_time_by(causal_ref))
