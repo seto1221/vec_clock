@@ -11,7 +11,7 @@
 //! assert_eq!(clock.len(), 3);
 //! assert_eq!(clock.self_index(), 0);
 //! assert_eq!(clock.compare(&[0, 0, 0]).unwrap(), vc::CompareState::Same);
-//! assert_eq!(format!("{:?}", clock), "VecClock { time: [0, 0, 0], self_index: 0 }");
+//! assert_eq!(format!("{:?}", clock), "VecClock { time: VecTime([0, 0, 0]), self_index: 0 }");
 //! assert_eq!(format!("{:?}", clock.as_slice()), "[0, 0, 0]");
 //!
 //! let mut time = clock.time();

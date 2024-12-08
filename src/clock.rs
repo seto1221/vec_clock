@@ -4,28 +4,38 @@ use crate::*;
 pub struct VecClock<T = u64>
 where T: Copy + Ord + From<bool> + From<T> + std::ops::AddAssign,
 {
-	pub(crate) time: Vec::<T>,
-	pub(crate) self_index: usize,
+	time: VecTime<T>,
+	self_index: usize,
 }
 
 impl<T> VecClock<T>
 where T: Copy + Ord + From<bool> + From<T> + std::ops::AddAssign,
 {
-	/// Get vector clock time, incrementing self index time.
-	pub fn time(&mut self) -> VecTime<T>
+	/// Constructs new `VecClock<T>`.
+	pub fn new(time: VecTime<T>, self_index: usize) -> Result<Self>
 	{
-		self.time[self.self_index] += T::from(true);
-		VecTime::new(&self.time)
+		if self_index >= time.len() {
+			Err(Error::OutOfRangeIndex)
+		} else {
+			Ok(Self { time, self_index })
+		}
+	}
+
+	/// Get vector clock time, incrementing self index time.
+	pub fn time(&mut self) -> &VecTime<T>
+	{
+		self.time.as_mut_vec()[self.self_index] += T::from(true);
+		&self.time
 	}
 
 	/// Get vector clock time, incrementing self index time and updating by causal.
-	pub fn time_by<U>(&mut self, causal: U) -> Result<VecTime<T>>
+	pub fn time_by<U>(&mut self, causal: U) -> Result<&VecTime<T>>
 	where U: AsRef<[T]>,
 	{
 		let causal_ref = causal.as_ref();
 		if self.time.len() != causal_ref.len() {
 			Err(Error::UnmatchTimeSize)
-		} else if self.time[self.self_index] < T::from(causal_ref[self.self_index]) {
+		} else if self.time.as_mut_slice()[self.self_index] < T::from(causal_ref[self.self_index]) {
 			Err(Error::InvalidTimeValue)
 		} else {
 			Ok(self.nocheck_time_by(causal_ref))
@@ -33,10 +43,10 @@ where T: Copy + Ord + From<bool> + From<T> + std::ops::AddAssign,
 	}
 
 	/// Get vector clock time, incrementing self index time and updating by causal without checking self index time.
-	pub fn nocheck_time_by<U>(&mut self, causal: U) -> VecTime<T>
+	pub fn nocheck_time_by<U>(&mut self, causal: U) -> &VecTime<T>
 	where U: AsRef<[T]>,
 	{
-		std::iter::zip(&mut self.time, causal.as_ref())
+		std::iter::zip(self.time.as_mut_slice(), causal.as_ref())
 			.filter(|(&mut t0, &t1)| t0 < t1)
 			.for_each(|(t0, t1)| *t0 = *t1);
 		self.time()
@@ -65,7 +75,7 @@ where T: Copy + Ord + From<bool> + From<T> + std::ops::AddAssign,
 
 	/// Compare time.
 	pub fn compare<U>(&self, other: U) -> Result<CompareState>
-	where U: AsRef<[T]>, for<'a> VecTime<'a, T>: From<&'a Vec<T>>,
+	where U: AsRef<[T]>,
 	{
 		compare(&self.time, other)
 	}

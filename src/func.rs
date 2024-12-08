@@ -4,11 +4,7 @@ use crate::*;
 pub fn new<T>(vec: Vec<T>, self_index: usize) -> Result<VecClock<T>>
 where T: Copy + Ord + From<bool> + std::ops::AddAssign,
 {
-	if self_index >= vec.len() {
-		Err(Error::OutOfRangeIndex)
-	} else {
-		Ok(VecClock {time: vec, self_index})
-	}
+	VecClock::new(VecTime::new(vec), self_index)
 }
 
 /// Convert to `Vec<T>` from `AsRef<[U]>` trait object.
@@ -34,8 +30,8 @@ where
 }
 
 /// Compare time.
-pub fn compare<'a, T, U, V>(time1: U, time2: V) -> Result<CompareState>
-where T: Ord + 'a, V: AsRef<[T]>, VecTime<'a, T>: From<U>,
+pub fn compare<T, U, V>(time1: U, time2: V) -> Result<CompareState>
+where T: Ord, V: AsRef<[T]>, VecTime<T>: From<U>,
 {
 	VecTime::from(time1).compare(time2)
 }
@@ -60,7 +56,7 @@ mod tests {
 	fn convert_test() {
 		let mut arr1 = [0u8; 3];
 		let mut vec1 = vec![0u8; 3];
-		let mut time1 = VecTime::new(&vec1);
+		let mut time1 = VecTime::new(vec1.clone());
 
 		assert_eq!(convert::<u64, _, _>(&time1), [0; 3]);
 		assert_eq!(convert::<u64, _, _>(&mut time1), [0; 3]);
